@@ -31,7 +31,7 @@ ws.on("connection", (connection) => {
           </div>
 
           <div class="text-start mt-2" >
-            <div class="inline-block bg-gray-200 text-gray-800 p-3 rounded-lg rounded-bl-none max-w-[75%]">
+            <div class="inline-block bg-gray-600 text-white p-3 rounded-lg rounded-bl-none max-w-[75%]">
               <md-block id="response-${id}"></md-block>
             </div>
           </div>

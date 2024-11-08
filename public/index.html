@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello</title>
+  <title>Gemeni Chatbot</title>
 
   <!-- tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -15,32 +15,68 @@
     crossorigin="anonymous"></script>
   <script src="https://unpkg.com/htmx-ext-ws@2.0.1/ws.js"></script>
 
+  <!-- md block -->
   <script type="module" src="https://md-block.verou.me/md-block.js"></script>
+
+  <style>
+    /* For WebKit browsers (Chrome, Safari, etc.) */
+    ::-webkit-scrollbar {
+      width: 8px;
+      /* Slim scrollbar */
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #2C2C2C;
+      /* Dark background to match theme */
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #3E3E3E;
+      /* Lighter dark color for the scrollbar handle */
+      border-radius: 10px;
+      /* Rounded corners for a modern look */
+      border: 2px solid #2C2C2C;
+      /* Slight padding with the track color */
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: #4E4E4E;
+      /* Slightly lighter color on hover for contrast */
+    }
+
+    /* For Firefox */
+    * {
+      scrollbar-width: thin;
+      /* Slim scrollbar */
+      scrollbar-color: #3E3E3E #2C2C2C;
+      /* Thumb color and track color */
+    }
+  </style>
 </head>
 
-<body class="min-h-dvh">
-  <main class="h-dvh max-w-screen-lg mx-auto p-5 flex flex-col justify-between">
-    <h1 class="text-3xl font-bold font-mono text-center mb-5">
-      Simple chatbot using HTMX
+<body class="min-h-dvh bg-[#171717]">
+  <main class="h-dvh max-w-screen-lg mx-auto p-5 flex flex-col gap-3 justify-between bg-[#212121]">
+    <h1 class="text-3xl font-bold font-mono text-center text-white">
+      Gemeni Chatbot
     </h1>
 
     <div class="flex-grow overflow-y-scroll flex flex-col-reverse p-5">
-      <div class="htmx-indicator text-center" id="loading">Loading...</div>
+      <div class="htmx-indicator text-center text-white" id="loading">Establishing connection...</div>
       <div id="chat" class="flex flex-col gap-3"></div>
     </div>
 
     <div hx-ext="ws" ws-connect="/">
-      <form id="form" ws-send class="flex justify-between items-center gap-3" hx-on::after-request="this.reset()">
+      <form id="form" ws-send class="flex justify-between items-stretch gap-3" hx-on:submit="this.reset()">
         <textarea name="prompt" type="text" placeholder="Enter prompt here" required
-          class="px-2 py-1 placeholder-teal-300 text-blueGray-600 relative bg-white rounded text-sm border-0 shadow outline-none focus:outline-none focus:ring w-full"></textarea>
+          class="px-2 py-1 placeholder-gray-400 text-gray-200 bg-[#2C2C2C] border border-[#3E3E3E] rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none w-full h-12"></textarea>
+
         <button type="submit"
-          class="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
-          Chat
+          class="bg-blue-600 text-white font-bold uppercase text-xs px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all ease-linear duration-150">
+          Send
         </button>
       </form>
     </div>
   </main>
-
 </body>
 
 </html
