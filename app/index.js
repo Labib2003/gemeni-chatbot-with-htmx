@@ -5,16 +5,18 @@ import { WebSocketServer } from "ws";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { randomUUID } from "crypto";
 
-const app = express();
 dotenv.config();
+
+const app = express();
 const server = http.createServer(app);
 const ws = new WebSocketServer({ server });
+
+app.use(express.static("public"));
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 ws.on("connection", (connection) => {
-  console.log("a new user joined");
   const chat = model.startChat();
 
   connection.on("message", async (message) => {
@@ -48,16 +50,13 @@ ws.on("connection", (connection) => {
         `<md-block hx-swap-oob="beforeend:#response-${id}">${chunkText}</md-block>`,
       );
     }
+
     const finalResponse = chunks.join("");
     connection.send(
       `<md-block id="response-${id}">${finalResponse}</md-block>`,
     );
   });
 });
-
-app.use(express.static("public"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 server.listen(5000, () => {
   console.log("server running on port 5000");
