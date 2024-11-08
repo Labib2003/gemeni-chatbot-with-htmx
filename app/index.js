@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import http from "http";
 import { WebSocketServer } from "ws";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { randomUUID } from "crypto";
 
 const app = express();
 dotenv.config();
@@ -18,7 +19,7 @@ ws.on("connection", (connection) => {
 
   connection.on("message", async (message) => {
     const prompt = JSON.parse(message.toString()).prompt;
-    let result = await chat.sendMessage(prompt);
+    const id = randomUUID();
 
     connection.send(`
       <div hx-swap-oob="beforeend:#chat">
@@ -29,17 +30,28 @@ ws.on("connection", (connection) => {
             </div>
           </div>
 
-          <div class="text-start mt-2">
+          <div class="text-start mt-2" >
             <div class="inline-block bg-gray-200 text-gray-800 p-3 rounded-lg rounded-bl-none max-w-[75%]">
-              ${result.response.text()}
+              <md-block id="response-${id}"></md-block>
             </div>
           </div>
         </div>
       </div>
     `);
-  });
-  connection.on("close", () => {
-    console.log("a user left");
+
+    const result = await chat.sendMessageStream(prompt);
+    const chunks = [];
+    for await (const chunk of result.stream) {
+      const chunkText = chunk.text();
+      chunks.push(chunkText);
+      connection.send(
+        `<md-block hx-swap-oob="beforeend:#response-${id}">${chunkText}</md-block>`,
+      );
+    }
+    const finalResponse = chunks.join("");
+    connection.send(
+      `<md-block id="response-${id}">${finalResponse}</md-block>`,
+    );
   });
 });
 
