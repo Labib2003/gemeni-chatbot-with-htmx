@@ -26,21 +26,21 @@
     }
 
     ::-webkit-scrollbar-track {
-      background: #2C2C2C;
+      background: #2c2c2c;
       /* Dark background to match theme */
     }
 
     ::-webkit-scrollbar-thumb {
-      background-color: #3E3E3E;
+      background-color: #3e3e3e;
       /* Lighter dark color for the scrollbar handle */
       border-radius: 10px;
       /* Rounded corners for a modern look */
-      border: 2px solid #2C2C2C;
+      border: 2px solid #2c2c2c;
       /* Slight padding with the track color */
     }
 
     ::-webkit-scrollbar-thumb:hover {
-      background-color: #4E4E4E;
+      background-color: #4e4e4e;
       /* Slightly lighter color on hover for contrast */
     }
 
@@ -48,7 +48,7 @@
     * {
       scrollbar-width: thin;
       /* Slim scrollbar */
-      scrollbar-color: #3E3E3E #2C2C2C;
+      scrollbar-color: #3e3e3e #2c2c2c;
       /* Thumb color and track color */
     }
   </style>
@@ -61,7 +61,9 @@
     </h1>
 
     <div class="flex-grow overflow-y-scroll flex flex-col-reverse p-5">
-      <div class="htmx-indicator text-center text-white" id="loading">Establishing connection...</div>
+      <div class="htmx-indicator text-center text-white" id="loading">
+        Establishing connection...
+      </div>
       <div id="chat" class="flex flex-col gap-3"></div>
     </div>
 
@@ -79,4 +81,4 @@
   </main>
 </body>
 
-</html
+</html>
