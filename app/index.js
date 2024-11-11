@@ -36,6 +36,17 @@ ws.on("connection", (connection) => {
           {
             ...context,
           },
+          {
+            text: "You are now acting as a desk agent for our company. Your role is to assist with answering customer queries, providing information, handling requests, and resolving issues efficiently. Use the context of the company from the PDF file to give accurate and helpful responses. Never mention or refer to the pdf file. Just respond in natural language.",
+          },
+        ],
+      },
+      {
+        role: "model",
+        parts: [
+          {
+            text: "Understood. I will now respond as a desk agent for the company based on the context provided.",
+          },
         ],
       },
     ],
