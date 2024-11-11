@@ -1,10 +1,12 @@
+import http from "http";
+import fs from "fs";
+import { randomUUID } from "crypto";
 import express from "express";
 import dotenv from "dotenv";
-import http from "http";
 import { WebSocketServer } from "ws";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { randomUUID } from "crypto";
-import fs from "fs";
+
+dotenv.config();
 
 function fileToGenerativePart(path, mimeType) {
   return {
@@ -15,8 +17,6 @@ function fileToGenerativePart(path, mimeType) {
   };
 }
 const context = fileToGenerativePart("public/context.pdf", "application/pdf");
-
-dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
@@ -51,6 +51,7 @@ ws.on("connection", (connection) => {
       },
     ],
   });
+
   connection.send(`
     <div hx-swap-oob="beforeend:#chat">
       <p class="text-center text-white">
@@ -58,7 +59,7 @@ ws.on("connection", (connection) => {
         fresh history.
       </p>
     </div>
-`);
+  `);
 
   connection.on("message", async (message) => {
     const prompt = JSON.parse(message.toString()).prompt;
@@ -82,20 +83,7 @@ ws.on("connection", (connection) => {
       </div>
     `);
 
-    // const result = await chat.sendMessageStream([prompt, context]);
-    // const chunks = [];
-    // for await (const chunk of result.stream) {
-    //   const chunkText = chunk.text();
-    //   chunks.push(chunkText);
-    //   connection.send(
-    //     `<md-block hx-swap-oob="beforeend:#response-${id}">${chunkText}</md-block>`,
-    //   );
-    // }
-
-    // const finalResponse = chunks.join("");
-
     try {
-      // const finalResponse = await chat.sendMessage([prompt, context]);
       const result = await chat.sendMessageStream(prompt);
       const chunks = [];
       connection.send(`<md-block id="response-${id}"></md-block>`);
@@ -108,9 +96,6 @@ ws.on("connection", (connection) => {
       }
 
       const finalResponse = chunks.join("");
-      // connection.send(
-      //   `<md-block id="response-${id}">${finalResponse.response.text()}</md-block>`,
-      // );
       connection.send(
         `<md-block id="response-${id}">${finalResponse}</md-block>`,
       );
