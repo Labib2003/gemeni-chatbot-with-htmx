@@ -25,7 +25,14 @@ const ws = new WebSocketServer({ server });
 app.use(express.static("public"));
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({
+  model: "gemini-1.5-flash",
+  generationConfig: {
+    candidateCount: 1, // Generate only one response to speed up generation
+    temperature: 0.3, // Lower creativity for more factual responses
+    topP: 0.8, // Sample from more likely token outputs
+  },
+});
 
 ws.on("connection", (connection) => {
   const chat = model.startChat({
@@ -37,7 +44,17 @@ ws.on("connection", (connection) => {
             ...context,
           },
           {
-            text: "You are now acting as a desk agent for our company. Your role is to assist with answering customer queries, providing information, handling requests, and resolving issues efficiently. Use the context of the company from the PDF file to give accurate and helpful responses. Never mention or refer to the pdf file. Just respond in natural language.",
+            text: `
+              You are now acting as a desk agent for our company. Your role is to assist with answering customer queries, providing information, handling requests, and resolving issues efficiently. 
+
+              **Important guidelines:**
+              1. Base all responses strictly on the context provided from the PDF file. Do not generate information that is not directly found in the PDF or company context.
+              2. Avoid referencing or relying on external knowledge unless the user explicitly requests additional information beyond the provided context.
+              3. Respond in clear, natural language, while keeping responses concise and focused on the user’s query.
+              4. Never mention the existence of the PDF file or the fact that you are using it for reference. All responses should appear natural as if you have internal knowledge of the company.
+              
+              Your goal is to provide accurate and helpful responses that are grounded in the company's information, ensuring that all interactions are relevant to the company's policies, procedures, and services.
+            `,
           },
         ],
       },
@@ -45,7 +62,7 @@ ws.on("connection", (connection) => {
         role: "model",
         parts: [
           {
-            text: "Understood. I will now respond as a desk agent for the company based on the context provided.",
+            text: "Understood. I will respond as a desk agent for the company based solely on the information provided in the context. I will not refer to external knowledge unless asked to do so, and I will avoid mentioning the PDF file or its use in my responses.",
           },
         ],
       },
