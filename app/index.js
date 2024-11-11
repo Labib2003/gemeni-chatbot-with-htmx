@@ -28,7 +28,18 @@ const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 ws.on("connection", (connection) => {
-  const chat = model.startChat();
+  const chat = model.startChat({
+    history: [
+      {
+        role: "user",
+        parts: [
+          {
+            ...context,
+          },
+        ],
+      },
+    ],
+  });
   connection.send(`
     <div hx-swap-oob="beforeend:#chat">
       <p class="text-center text-white">
@@ -74,7 +85,7 @@ ws.on("connection", (connection) => {
 
     try {
       // const finalResponse = await chat.sendMessage([prompt, context]);
-      const result = await chat.sendMessageStream([prompt, context]);
+      const result = await chat.sendMessageStream(prompt);
       const chunks = [];
       connection.send(`<md-block id="response-${id}"></md-block>`);
       for await (const chunk of result.stream) {
@@ -93,6 +104,7 @@ ws.on("connection", (connection) => {
         `<md-block id="response-${id}">${finalResponse}</md-block>`,
       );
     } catch (error) {
+      console.log(error);
       connection.send(`<md-block id="response-${id}"></md-block>`);
       connection.send(
         `<md-block id="response-${id}">There was an error while generating the response, please refresh and start a new chat</md-block>`,
